@@ -115,8 +115,8 @@
             const netMargin = price > 0 ? (net / price * 100) : 0;
 
             document.getElementById('netProfit').innerText = fmt(net);
-            document.getElementById('gMargin').innerText = grossMargin.toFixed(1);
-            document.getElementById('nMargin').innerText = netMargin.toFixed(1);
+            document.getElementById('gMargin').innerText = grossMargin.toFixed(4);
+            document.getElementById('nMargin').innerText = netMargin.toFixed(4);
             
             const card = document.getElementById('summary');
             if (netMargin < 10) {
