@@ -16,11 +16,11 @@
     <div id="appContainer" class="hidden max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg mt-6">
         <div class="flex items-center justify-between border-b pb-4 mb-6">
             <div>
-                <h1 class="text-2xl font-black text-gray-900">PRE-TAX PROFIT CALCULATOR</h1>
+                <h1 class="text-2xl font-black text-gray-900">PRE-TAX PROFIT SUITE</h1>
                 <p id="companyName" class="text-xs font-bold text-blue-600 uppercase"></p>
             </div>
-            <div class="h-16 w-16 bg-yellow-800 rounded-lg overflow-hidden flex items-center justify-center">
-                <img src="https://yellowjacket.com/wp-content/uploads/2014/12/yj-logo-pms-blue-on-yellow.jpg" alt="Logo" class="h-full w-full object-contain">
+            <div class="h-32 w-32 bg-white rounded-lg overflow-hidden flex items-center justify-center">
+                <img src="https://blog.logowiz.app/wp-content/uploads/2025/01/hexagonal-shape-gradient-hvac-services-logo-design.jpg">
             </div>
         </div>
         
@@ -45,26 +45,25 @@
             <button onclick="resetCalculator()" class="w-full py-4 bg-gray-200 text-gray-700 rounded-lg font-bold">RESET</button>
             
             <p class="text-[9px] text-gray-400 mt-4 text-center">
-                Note: Estimates are pre-tax, rounded and for internal planning purposes only.
+                Note: Estimates are pre-tax, and for internal planning purposes only.
             </p>
         </div>
     </div>
 
     <script>
-        const CONFIG = {
-            companyLabel: "AIRFL0HVAC"
-        };
-
+        const CONFIG = { companyLabel: "Vozinha's HVAC" };
         const FIELDS = [
             { id: 'price', label: 'Price ($)' }, { id: 'commVal', label: 'Commission Value' },
             { id: 'equipment', label: 'Equip ($)' }, { id: 'materials', label: 'Materials Cost ($)' },
             { id: 'sub', label: 'Sub/Permit ($)' }, { id: 'techHours', label: 'Tech Hrs' },
             { id: 'techRate', label: 'Tech Rate ($)' }, { id: 'driveHours', label: 'Drive Hrs' },
-            { id: 'fleetRate', label: 'Fleet Rate ($)' }, { id: 'overhead', label: 'Overhead ($)' }
+            { id: 'fleetRate', label: 'Fleet Rate ($)' }, { id: 'overhead', label: 'Overhead ($)' },
+            { id: 'misc1', label: 'Misc 1 ($)' }, { id: 'misc2', label: 'Misc 2 ($)' },
+            { id: 'misc3', label: 'Misc 3 ($)' }, { id: 'misc4', label: 'Misc 4 ($)' }
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
-            const _0x4a21 = "QUlSRkxPSFZBQw==";
+            const _0x4a21 = "Vk9aSU5IQVNIVkFD";
             const _0x1a9c = new URLSearchParams(window.location.search);
             const _0x2b3d = _0x1a9c.get('license');
 
@@ -77,7 +76,7 @@
                 container.innerHTML = FIELDS.map(f => `
                     <div>
                         <label class="text-[9px] font-bold uppercase text-gray-400">${f.label}</label>
-                        <input type="number" id="${f.id}" oninput="calculate()" class="w-full h-10 p-2 border rounded-lg" placeholder="0">
+                        <input type="number" min="0" id="${f.id}" oninput="calculate()" class="w-full h-10 p-2 border rounded-lg" placeholder="0">
                     </div>
                 `).join('');
                 
@@ -93,6 +92,7 @@
                 const el = document.getElementById(id);
                 if (!el) return 0;
                 let val = parseFloat(el.value) || 0;
+                if (val < 0) { val = 0; el.value = 0; }
                 if (val > 99000000) { val = 99000000; el.value = val; }
                 return val;
             };
@@ -107,16 +107,19 @@
             }
 
             const commPaid = commType === 'percent' ? price * (commVal / 100) : commVal;
-            const direct = get('equipment') + get('materials') + get('sub') + (get('techHours') * get('techRate')) + commPaid;
-            const overhead = (get('driveHours') * get('fleetRate')) + get('overhead');
-            const net = price - direct - overhead;
+            const directCosts = get('equipment') + get('materials') + get('sub') + (get('techHours') * get('techRate'));
             
-            const grossMargin = price > 0 ? ((price - direct) / price * 100) : 0;
+            // Added Misc 1-4 to operating expenses
+            const operatingExpenses = commPaid + (get('driveHours') * get('fleetRate')) + get('overhead') + 
+                                      get('misc1') + get('misc2') + get('misc3') + get('misc4');
+            
+            const net = price - directCosts - operatingExpenses;
+            
+            const grossMargin = price > 0 ? ((price - directCosts) / price * 100) : 0;
             const netMargin = price > 0 ? (net / price * 100) : 0;
 
             document.getElementById('netProfit').innerText = fmt(net);
             
-            // Smart Margin Logic: Shows whole numbers cleanly, uses 4 decimals only if needed
             const formatMargin = (val) => val % 1 === 0 ? val.toFixed(0) : val.toFixed(4);
             document.getElementById('gMargin').innerText = formatMargin(grossMargin);
             document.getElementById('nMargin').innerText = formatMargin(netMargin);
