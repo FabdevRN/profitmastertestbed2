@@ -28,8 +28,8 @@
             <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Net Profit</p>
             <h2 id="netProfit" class="text-4xl font-black mb-2">$0.00</h2>
             <div class="flex justify-between text-sm font-bold pt-2 border-t border-white/20">
-                <p>Gross: <span id="gMargin">0.0</span>%</p>
-                <p>Net: <span id="nMargin">0.0</span>%</p>
+                <p>Gross: <span id="gMargin">0</span>%</p>
+                <p>Net: <span id="nMargin">0</span>%</p>
             </div>
         </div>
 
@@ -115,8 +115,11 @@
             const netMargin = price > 0 ? (net / price * 100) : 0;
 
             document.getElementById('netProfit').innerText = fmt(net);
-            document.getElementById('gMargin').innerText = grossMargin.toFixed(4);
-            document.getElementById('nMargin').innerText = netMargin.toFixed(4);
+            
+            // Smart Margin Logic: Shows whole numbers cleanly, uses 4 decimals only if needed
+            const formatMargin = (val) => val % 1 === 0 ? val.toFixed(0) : val.toFixed(4);
+            document.getElementById('gMargin').innerText = formatMargin(grossMargin);
+            document.getElementById('nMargin').innerText = formatMargin(netMargin);
             
             const card = document.getElementById('summary');
             if (netMargin < 10) {
